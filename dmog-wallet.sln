@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30523.141
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DmogWallet", "dmog-wallet\DmogWallet.csproj", "{8FFCF774-EA79-4E29-A415-9589DB698CBE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DmogWalletTest", "dmogWalletTest\DmogWalletTest.csproj", "{1739FB87-4AD6-4172-97BD-F382C78AA2E4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8FFCF774-EA79-4E29-A415-9589DB698CBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FFCF774-EA79-4E29-A415-9589DB698CBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FFCF774-EA79-4E29-A415-9589DB698CBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FFCF774-EA79-4E29-A415-9589DB698CBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1739FB87-4AD6-4172-97BD-F382C78AA2E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1739FB87-4AD6-4172-97BD-F382C78AA2E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1739FB87-4AD6-4172-97BD-F382C78AA2E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1739FB87-4AD6-4172-97BD-F382C78AA2E4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7019D831-2B3E-42F1-8AD0-E640DA26A85F}
+	EndGlobalSection
+EndGlobal
