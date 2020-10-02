@@ -15,15 +15,13 @@ namespace DmogWallet
 
         private WalletFile _walletFile;
 
-        private Account _account;
-
-        private byte[] _seed;
-
         private Random _random = new Random();
 
-        public bool IsUnlocked => _seed != null;
+        public bool IsUnlocked => Account != null;
 
         public bool IsCreated => _walletFile != null;
+
+        public Account Account { get; private set; }
 
         public Wallet(string path = DefaultWalletFile)
         {
@@ -84,7 +82,11 @@ namespace DmogWallet
             _walletFile = new WalletFile(encryptedSeed, salt);
            
             Caching.Persist(_path, _walletFile);
-            
+
+            Chaos.NaCl.Ed25519.KeyPairFromSeed(out byte[] publicKey, out byte[] privateKey, seed);
+
+            Account = new Account(KeyType.ED25519, privateKey, publicKey);
+
             return true;
         }
 
@@ -100,19 +102,15 @@ namespace DmogWallet
                 return IsUnlocked && IsCreated;
             }
 
-            try
-            {
-                //var masterKey = Key.Parse(_walletFile.WifKey, password, _network);
-                //_extKey = new ExtKey(masterKey, _walletFile.ChainCode);
-            }
-            catch (SecurityException ex)
-            {
-                //Log.Error(ex);
-                return false;
-            }
+            var pswBytes = Encoding.UTF8.GetBytes(password);
 
-            // finally load all keys
-            //LoadKeys();
+            pswBytes = SHA256.Create().ComputeHash(pswBytes);
+
+            var seed = ManagedAes.DecryptStringFromBytes_Aes(_walletFile.encryptedSeed, pswBytes, _walletFile.salt);
+
+            Chaos.NaCl.Ed25519.KeyPairFromSeed(out byte[] publicKey, out byte[] privateKey, Utils.HexToByteArray(seed));
+
+            Account = new Account(KeyType.ED25519, privateKey, publicKey);
 
             return true;
         }

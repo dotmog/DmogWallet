@@ -20,9 +20,21 @@ namespace DmogWalletTest
         [Test]
         public void CreateWalletTest()
         {
-            var wallet = new Wallet("1234", "wallet.dat");
+            var wallet1 = new Wallet("1234", "wallet.dat");
+            
+            Assert.True(wallet1.IsCreated);
+            Assert.True(wallet1.IsUnlocked);
 
-            Assert.True(wallet.IsCreated);
+            var wallet2 = new Wallet("wallet.dat");
+
+            Assert.True(wallet2.IsCreated);
+            Assert.False(wallet2.IsUnlocked);
+
+            wallet2.Unlock("1234");
+
+            Assert.True(wallet2.IsUnlocked);
+
+            Assert.AreEqual(wallet1.Account.Address, wallet2.Account.Address);
         }
     }
 }
