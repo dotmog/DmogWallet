@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\dmog-wallet\DmogWallet.csproj" />
+    <ProjectReference Include="..\DmogWallet\DmogWallet.csproj" />
   </ItemGroup>
 
 </Project>

@@ -65,7 +65,7 @@ namespace DmogWallet
                 return true;
             }
 
-            byte[] randomBytes = new byte[64];
+            byte[] randomBytes = new byte[48];
 
             _random.NextBytes(randomBytes);
 
@@ -73,9 +73,9 @@ namespace DmogWallet
 
             var pswBytes = Encoding.UTF8.GetBytes(password);
 
-            var salt = memoryBytes.Slice(0, 32).ToArray();
+            var salt = memoryBytes.Slice(0, 16).ToArray();
             
-            var seed = memoryBytes.Slice(32, 32).ToArray();
+            var seed = memoryBytes.Slice(16, 32).ToArray();
 
             pswBytes = SHA256.Create().ComputeHash(pswBytes);
 
