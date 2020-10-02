@@ -2,8 +2,9 @@
 {
     public class WalletFile
     {
-        private byte[] encryptedSeed;
-        private byte[] salt;
+        public byte[] encryptedSeed;
+
+        public byte[] salt;
 
         public WalletFile(byte[] encryptedSeed, byte[] salt)
         {
