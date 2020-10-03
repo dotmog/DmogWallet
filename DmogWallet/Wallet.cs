@@ -1,14 +1,23 @@
-﻿using SubstrateNetApi;
+﻿using NLog;
+using SubstrateNetApi;
 using SubstrateNetApi.MetaDataModel.Values;
+using SubstrateNetApi.TypeConverters;
 using System;
 using System.Security;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DmogWallet
 {
     public class Wallet
     {
+        /// <summary> The logger. </summary>
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
+        private const string WEBSOCKETURL = "wss://boot.worldofmogwais.com";
+
         private const string DefaultWalletFile = "wallet.dat";
 
         private readonly string _path;
@@ -17,19 +26,22 @@ namespace DmogWallet
 
         private Random _random = new Random();
 
+        private SubstrateClient _client;
+
+        private CancellationTokenSource _connectTokenSource;
+
         public bool IsUnlocked => Account != null;
 
         public bool IsCreated => _walletFile != null;
 
         public Account Account { get; private set; }
 
-        public Wallet(string path = DefaultWalletFile)
-        {
-            _path = path;
+        public ChainInfo ChainInfo { get; private set; }
 
-            if (!Caching.TryReadFile(path, out _walletFile))
-            {
-            }
+        public bool IsConnected => _client.IsConnected;
+
+        public Wallet(string path = DefaultWalletFile) : this(null, path)
+        {
         }
 
         /// <summary>
@@ -41,14 +53,16 @@ namespace DmogWallet
         {
             _path = path;
 
-            if (!Caching.TryReadFile(path, out _walletFile))
+            if (!Caching.TryReadFile(path, out _walletFile) && password != null)
             {
                 Create(password);
             }
-            else
+            else if (password != null)
             {
                 Unlock(password);
             }
+
+            _connectTokenSource = new CancellationTokenSource();
         }
 
         /// <summary>
@@ -60,8 +74,11 @@ namespace DmogWallet
         {
             if (IsCreated)
             {
+                Logger.Warn($"Wallet already created.");
                 return true;
             }
+
+            Logger.Info($"Creating new wallet.");
 
             byte[] randomBytes = new byte[48];
 
@@ -99,8 +116,11 @@ namespace DmogWallet
         {
             if (IsUnlocked || !IsCreated)
             {
+                Logger.Warn($"Wallet is already unlocked or doesn't exist.");
                 return IsUnlocked && IsCreated;
             }
+
+            Logger.Info($"Unlock new wallet.");
 
             var pswBytes = Encoding.UTF8.GetBytes(password);
 
@@ -113,6 +133,29 @@ namespace DmogWallet
             Account = new Account(KeyType.ED25519, privateKey, publicKey);
 
             return true;
+        }
+    
+        public async Task ConnectAsync(string webSocketUrl = WEBSOCKETURL)
+        {
+
+            _client = new SubstrateClient(new Uri(webSocketUrl));
+
+            _client.RegisterTypeConverter(new MogwaiStructTypeConverter());
+
+            await _client.ConnectAsync(_connectTokenSource.Token);
+
+            var systemName = await _client.System.NameAsync(_connectTokenSource.Token);
+
+            var systemVersion = await _client.System.VersionAsync(_connectTokenSource.Token);
+
+            var systemChain = await _client.System.ChainAsync(_connectTokenSource.Token);
+
+            ChainInfo = new ChainInfo(systemName, systemVersion, systemChain);
+        }
+
+        public async Task DisconnectAsync()
+        {
+            await _client.CloseAsync(_connectTokenSource.Token);
         }
     }
 }
