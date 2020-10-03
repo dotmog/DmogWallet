@@ -48,7 +48,15 @@ namespace DmogWalletTest
             var wallet = new Wallet("1234", "wallet.dat");
             await wallet.ConnectAsync();
 
-            Assert.IsTrue(wallet.IsConnected);
+            Assert.True(wallet.IsConnected);
+
+            Assert.AreEqual("Substrate Node", wallet.ChainInfo.Name);
+            Assert.AreEqual("2.0.0-394ff02-x86_64-linux-gnu", wallet.ChainInfo.Version);
+            Assert.AreEqual("DOT Mogwai Testnet", wallet.ChainInfo.Chain);
+
+            await wallet.DisconnectAsync();
+
+            Assert.False(wallet.IsConnected);
         }
 
 
